@@ -198,31 +198,7 @@ Tests cover the `savedActivitiesSlice` reducer (save, unsave, deduplication, reh
 
 ## Assumptions & Tradeoffs
 
-### 1. Activity detail page vs. modal
-
-**Decision:** Activity detail renders at `/activities/:id` as a dedicated page rather than a modal overlay on the list.
-
-**Rationale:**
-- Pages are bookmarkable and shareable — a direct URL to an activity works without needing the list context.
-- Deep linking works naturally with the Next.js App Router.
-- Modals require careful focus management, URL syncing, and scroll restoration — significant complexity for this scope.
-- **Tradeoff:** Page navigation means losing the list scroll position. A future improvement could use Next.js parallel routes to layer a modal on top of the list while keeping the URL.
-
----
-
-### 2. Join table (PlanActivity) vs. JSON array for plan–activity relationship
-
-**Decision:** `PlanActivity` join table with FK constraints instead of storing `activityIds` as a Postgres array or JSON column.
-
-**Rationale:**
-- **Referential integrity:** FK constraints prevent orphaned references (e.g. saving an activity ID that no longer exists).
-- **Queryability:** Easy to query "which plans include activity X" without scanning JSON.
-- **Extensibility:** The join table already has an `order` column; future columns (e.g. `notes`, `visitedAt`) can be added cleanly.
-- **Tradeoff:** Slightly more schema complexity; requires a transaction to replace activities on PATCH. For a simple single-user app a JSON array would have been acceptable, but the join table is the correct relational choice.
-
----
-
-### 3. Saved activities stored as full objects in Redux (not just IDs)
+### 1. Saved activities stored as full objects in Redux (not just IDs)
 
 **Decision:** The `savedActivities` Redux slice stores full `Activity` objects, not just IDs.
 
@@ -234,7 +210,7 @@ Tests cover the `savedActivitiesSlice` reducer (save, unsave, deduplication, reh
 
 ---
 
-### 4. Client-side save persistence (no backend save endpoint)
+### 2. Client-side save persistence (no backend save endpoint)
 
 **Decision:** Saved activities are stored in Redux + localStorage only; there is no `/saves` backend endpoint.
 
@@ -244,7 +220,7 @@ Tests cover the `savedActivitiesSlice` reducer (save, unsave, deduplication, reh
 
 ---
 
-### 5. Form validation: React Hook Form + Zod (frontend)
+### 3. Form validation: React Hook Form + Zod (frontend)
 
 **Decision:** Used React Hook Form with `@hookform/resolvers/zod` for the create/edit plan forms.
 

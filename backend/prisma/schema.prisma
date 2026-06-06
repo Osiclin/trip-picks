@@ -1,0 +1,61 @@
+// This is your Prisma schema file
+// Learn more at: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Activity {
+  id              String   @id
+  title           String
+  category        String
+  area            String
+  durationMinutes Int
+  priceLevel      Int
+  rating          Float
+  imageUrl        String
+  description     String
+  tags            String[]
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  plans PlanActivity[]
+
+  @@index([category])
+  @@index([area])
+}
+
+model Plan {
+  id        String   @id
+  name      String
+  date      DateTime
+  notes     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  activities PlanActivity[]
+}
+
+/// Join table for the many-to-many relationship between Plan and Activity.
+/// Chosen over storing a raw activityIds array (JSON/array column) for:
+///   1. Referential integrity – FK constraints prevent orphaned references.
+///   2. Queryability – easy to query "which plans include activity X".
+///   3. Extensibility – can add fields like `order` or `addedAt` without schema changes.
+model PlanActivity {
+  planId     String
+  activityId String
+  order      Int      @default(0)
+  createdAt  DateTime @default(now())
+
+  plan     Plan     @relation(fields: [planId], references: [id], onDelete: Cascade)
+  activity Activity @relation(fields: [activityId], references: [id])
+
+  @@id([planId, activityId])
+  @@index([planId])
+  @@index([activityId])
+}

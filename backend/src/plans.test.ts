@@ -1,6 +1,6 @@
 import request from 'supertest';
-import app from '../index';
-import { prisma } from '../lib/prisma';
+import app from './index';
+import { prisma } from './lib/prisma';
 
 beforeAll(async () => {
   // Ensure seed data exists for testing

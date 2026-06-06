@@ -121,7 +121,7 @@ cd backend
 # 3. Install dependencies
 npm install
 
-# 4. Run migrations (in /backend on your terminal)
+# 4. Run migrations
 npx prisma migrate dev --name init
 
 # 5. Seed the database (7 activities + 1 sample plan)
